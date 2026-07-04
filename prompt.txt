@@ -1,0 +1,99 @@
+
+Hey, I'm building a clone of the first 2 steps of the Udyam registration
+form (udyamregistration.gov.in) for a college assignment. Doing
+this inside ONE folder called Udyam_Registration-assignment, with just two
+subfolders inside it - frontend and backend. Don't make any other folders
+at the top level, everything code related goes in one of those two.
+
+frontend = Next.js 14, TypeScript, Tailwind
+backend = Node + Express + Prisma + PostgreSQL
+
+Going to give you 4 chunks of work, one at a time. Do the one I paste, then
+stop and tell me you're done so I can check it before the next one.
+
+---
+
+CHUNK 1 - schema + step 1 and step 2 forms
+
+First make a json file at frontend/src/schema/udyamFormSchema.json that
+describes the form fields for step 1 (aadhaar + otp) and step 2 (pan) - I
+want the form to render from this json, not hardcoded fields, since that's
+part of the assignment requirement.
+
+step 1 needs:
+- aadhaar number, 12 digits only, regex ^[0-9]{12}$
+- applicant name, letters/spaces only
+- a consent checkbox
+- validate/generate otp button, greyed out until aadhaar + name + consent
+  are all filled correctly
+- otp field, 6 digits, shows up after otp is requested
+
+step 2 needs:
+- organisation type dropdown (proprietorship, huf, partnership,
+  co-operative society, private ltd, public ltd, self help group, llp,
+  society, trust, others)
+- pan number, 10 chars, regex ^[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}$, auto
+  uppercase while typing
+- pan holder name (only needed if org type isn't proprietorship)
+- dob or doi date field
+
+after the schema, build the actual UI for both steps using it. needs to be
+mobile friendly (test like 375px up to desktop), show error messages under
+each field, have a progress bar/tracker showing step 1 vs step 2, mock the
+otp sending with like an 800ms fake delay and a 30 sec resend timer, and
+when step 2 is done, send the data to http://localhost:4000/api/submit and
+show a success page with whatever reference number comes back. style it
+like a plain government form - blue header, white card, nothing fancy.
+
+---
+
+CHUNK 2 - backend + database
+
+build the backend now. express + typescript api with:
+
+POST /api/submit - takes aadhaarNumber, applicantName, organisationType,
+panNumber, panHolderName, dobOrDoi. validate on the server side too (same
+regex as frontend), send back 400 with errors if something's wrong, or 201
+with a generated reference number like UDYAM-XX-00-0000000 if it's fine,
+and save it to the db with prisma.
+
+GET /api/submissions/:referenceNumber - look up a submission, 404 if it
+doesn't exist.
+
+prisma schema, model called UdyamSubmission with: id (uuid), reference
+number (unique), aadhaar number (hash it, don't store plain), applicant
+name, org type, pan number, pan holder name (can be empty), dob or doi,
+otp verified, pan verified, created at, updated at.
+
+also add cors so the frontend can hit it, and write a short
+SCHEMA_NOTES.md in backend/prisma explaining what each field is for in
+plain english, I need that to draw an er diagram by hand later.
+
+---
+
+CHUNK 3 - tests
+
+add some tests so i'm not just submitting untested code.
+
+frontend (jest + testing library): aadhaar regex valid/invalid cases, pan
+regex valid/invalid cases (including lowercase and empty string), and
+button enabled/disabled states on both steps.
+
+backend (jest + supertest): valid submit returns 201 + ref number, bad
+aadhaar returns 400, bad pan returns 400, missing fields returns 400, and
+looking up an unknown reference number returns 404. mock the db for these,
+don't hit a real postgres instance.
+
+add a test script to package.json in both folders so i can just run
+npm test.
+
+---
+
+CHUNK 4 - readme + docker + wrap up
+
+last bit - write a README.md at the root explaining what this project is,
+how to run it locally, how to run it with docker, and a short section on
+why the form is schema driven instead of hardcoded. add dockerfiles for
+frontend and backend plus a docker-compose.yml with a postgres service.
+then go through both steps yourself end to end and fix anything broken,
+and make sure npm test passes in both folders.
