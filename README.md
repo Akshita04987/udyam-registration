@@ -1,25 +1,87 @@
 # Udyam Registration Portal Clone
 
-This is a functional clone of the first two steps of the official Indian [Udyam Registration Portal](https://udyamregistration.gov.in) (Ministry of MSME). It is built as a college assignment using a modern web stack.
+![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)
+![Express](https://img.shields.io/badge/Express-4.18-green?style=flat-square&logo=express)
+![Prisma](https://img.shields.io/badge/Prisma-5.0-2D3748?style=flat-square&logo=prisma)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat-square&logo=postgresql)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0-38B2AC?style=flat-square&logo=tailwind-css)
+![Tests Passing](https://img.shields.io/badge/Tests-Passing-success?style=flat-square)
 
-The project is structured inside a single folder containing:
-*   `/frontend`: Built with Next.js 14 (App Router), TypeScript, and Tailwind CSS.
-*   `/backend`: Built with Node.js + Express, TypeScript, Prisma, and PostgreSQL (via Supabase / Local Docker).
+A functional clone of the first two steps of the official Indian [Udyam Registration Portal](https://udyamregistration.gov.in) (Ministry of MSME), built as a college assignment using a modern full-stack web architecture.
+
+---
+
+## Table of Contents
+
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Technical Features](#technical-features)
+- [Design Decisions](#design-decisions)
+- [Running Locally](#running-locally)
+- [Running with Docker](#running-with-docker)
+- [Running Tests](#running-tests)
+- [Assignment Context](#assignment-context)
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind CSS |
+| **Backend** | Node.js, Express, TypeScript |
+| **Database** | PostgreSQL (via Supabase), Prisma ORM |
+| **Testing** | Jest, React Testing Library, Supertest |
+| **Deployment** | Docker Compose |
+
+---
+
+## Project Structure
+
+```
+udyam-registration/
+├── frontend/
+│   ├── src/
+│   │   ├── app/              # Next.js App Router pages
+│   │   ├── components/       # Reusable UI components
+│   │   ├── hooks/            # Custom React hooks (useStep1Form, useStep2Form)
+│   │   ├── schema/           # JSON schema for form definition
+│   │   ├── utils/            # Utility functions
+│   │   └── validators/       # Validation logic
+│   ├── public/               # Static assets
+│   └── package.json
+├── backend/
+│   ├── src/
+│   │   ├── routes/           # Express API routes
+│   │   ├── validators/       # Request validation schemas
+│   │   ├── utils/            # Helper functions (hashing, reference generation)
+│   │   ├── lib/              # Prisma client configuration
+│   │   └── index.ts          # Express app entry point
+│   ├── prisma/
+│   │   ├── schema.prisma     # Database schema definition
+│   │   └── SCHEMA_NOTES.md   # Schema documentation
+│   ├── .env                  # Environment variables (gitignored)
+│   └── package.json
+├── docs/                     # Assignment documentation and diagrams
+└── README.md
+```
 
 ---
 
 ## Technical Features
 
-1.  **Schema-Driven Forms**: The entire Step 1 and Step 2 forms are dynamically generated from a central JSON schema definitions file. Fields are not hardcoded.
-2.  **Strict Client & Server Validation**:
-    *   **Aadhaar Number**: Checked against exactly 12 digits (`^[0-9]{12}$`).
-    *   **PAN Number**: Normalised to uppercase and validated against the format `5 letters, 4 digits, 1 letter` (`^[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}$`).
-    *   **Name**: Alphabets and spaces only (`^[A-Za-z ]+$`).
-    *   **Organisation Type**: Selectable options list that conditionally controls other fields.
-3.  **Mocked OTP Flow**: Requests a mock OTP with an 800ms simulated network latency delay, a 30-second resend cooldown timer, and a verification screen.
-4.  **Conditional Rendering**: The Name as per PAN field is dynamically hidden when "Proprietorship" is selected and mandatory for all other business types.
-5.  **Secure Storage**: Aadhaar number is hashed using SHA-256 before being stored in PostgreSQL. It is never persisted in plain text.
-6.  **Full Test Suite**: Tested using Jest and React Testing Library on the frontend, and Jest + Supertest on the backend.
+| Feature | Description | Validation Rule |
+|---------|-------------|-----------------|
+| **Schema-Driven Forms** | Step 1 and Step 2 forms are dynamically generated from a central JSON schema. Fields are not hardcoded in components. | N/A |
+| **Aadhaar Validation** | Client and server-side validation for 12-digit Aadhaar numbers. | `^[0-9]{12}$` |
+| **PAN Validation** | Normalised to uppercase and validated against standard PAN format. | `^[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}$` |
+| **Name Validation** | Ensures names contain only alphabets and spaces. | `^[A-Za-z ]+$` |
+| **Organisation Type** | Selectable options that conditionally control other field visibility. | N/A |
+| **Mocked OTP Flow** | Simulates OTP request with 800ms network delay, 30-second resend cooldown, and verification screen. | N/A |
+| **Conditional Rendering** | "Name as per PAN" field is hidden for Proprietorship, mandatory for other business types. | N/A |
+| **Secure Storage** | Aadhaar numbers are hashed using SHA-256 before storage. Plain text is never persisted. | N/A |
+| **Full Test Suite** | Frontend tests with Jest + React Testing Library; backend tests with Jest + Supertest. | N/A |
 
 ---
 
@@ -59,16 +121,21 @@ applying a schema to a live database are two separate steps.
 ## Running Locally
 
 ### Prerequisites
-*   Node.js (v18 or higher)
-*   A running PostgreSQL database instance (or Docker)
+
+- Node.js (v18 or higher)
+- A running PostgreSQL database instance (or Docker)
 
 ### 1. Database Setup
+
 Create a `.env` file in `/backend` using `/backend/.env.example` as a template:
+
 ```env
 DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.mofscsewexuahqriltyh.supabase.co:5432/postgres"
 PORT=4000
 ```
-Run Prisma Client generator and push the database migrations:
+
+Run Prisma Client generator and push the database schema:
+
 ```bash
 cd backend
 npm install
@@ -77,50 +144,70 @@ npx prisma db push
 ```
 
 ### 2. Run Backend
+
 Start the Express API development server (runs on `http://localhost:4000`):
+
 ```bash
 npm run dev
 ```
 
 ### 3. Run Frontend
+
 In a new terminal window:
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+
 Open `http://localhost:3000` in your web browser.
 
 ---
 
 ## Running with Docker
 
-You can spin up the entire application stack (Frontend, Backend, and a local PostgreSQL database) in one step using Docker Compose.
+Spin up the entire application stack (Frontend, Backend, and a local PostgreSQL database) in one step using Docker Compose.
 
-### Steps:
-1.  Navigate to the root folder:
-    ```bash
-    docker-compose up --build
-    ```
-2.  The services will run as:
-    *   **Frontend**: `http://localhost:3000`
-    *   **Backend API**: `http://localhost:4000`
-    *   **PostgreSQL Database**: Port `5432` on localhost
+### Steps
+
+1. Navigate to the root folder:
+
+```bash
+docker-compose up --build
+```
+
+2. The services will run as:
+   - **Frontend**: `http://localhost:3000`
+   - **Backend API**: `http://localhost:4000`
+   - **PostgreSQL Database**: Port `5432` on localhost
 
 ---
 
 ## Running Tests
 
 ### Frontend Tests
+
 Tests cover Aadhaar/PAN regex validation, conditional rendering, and form action button states:
+
 ```bash
 cd frontend
 npm test
 ```
 
 ### Backend API Tests
+
 Tests cover Express routing, schema validators, mock database interactions, and error status codes:
+
 ```bash
 cd backend
 npm test
 ```
+
+---
+
+## Assignment Context
+
+This project was built as a college assignment to clone the first two steps of the Udyam Registration portal (Aadhaar verification and PAN verification). The implementation focuses on schema-driven form design, secure data handling, and comprehensive test coverage.
+
+Hand-drawn flow diagrams, entity-relationship diagrams, and the full assignment prompt log are available in the `/docs` directory for reference.
