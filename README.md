@@ -23,16 +23,36 @@ The project is structured inside a single folder containing:
 
 ---
 
-## Form Design: Why Schema-Driven?
+Design Decisions
 
-Instead of hardcoding input elements like `<input name="pan" ... />` inside React files, the forms are rendered dynamically by reading a JSON schema configuration file located at:
-[`frontend/src/schema/udyamFormSchema.json`](frontend/src/schema/udyamFormSchema.json)
+I built the form so it renders from a single JSON schema
+(udyamFormSchema.json) instead of hardcoding each input directly in the
+components. The reason is simple: Step 1 and Step 2 both have fields,
+validation rules, and error messages that change together - if I'd
+hardcoded them, changing one PAN validation rule would mean editing the
+JSX itself. Keeping the schema separate meant I could tweak a regex or
+add a field without touching the UI code at all, and it also matches the
+assignment's own requirement that the form be "dynamic" based on the
+scraped structure.
 
-### Key Benefits:
-*   **Maintainability**: Any updates to field labels, validation regexes, error messages, or placeholders can be modified by editing a single JSON schema. No JSX/TSX changes are required.
-*   **Separation of Concerns**: Decouples form configuration (metadata) from presentation UI logic (rendering components).
-*   **Dynamic Layouts**: Easily handles conditional visibility rules (e.g. showing name fields only for non-proprietorships, showing OTP inputs only after requesting) using schema directives.
-*   **Scalability**: Adding a Step 3 or new fields takes minutes; simply declare them in the JSON schema list, and the layout renderer handles the rest automatically.
+I split the form logic into custom hooks (useStep1Form.ts,
+useStep2Form.ts) instead of keeping everything inside the components.
+This made the validation logic testable on its own, without needing to
+render the UI first - that's why the Aadhaar and PAN regex tests in
+validators.ts could be written independently of the component tests.
+
+On the backend, I made sure the Aadhaar number is hashed (SHA-256) before
+it's stored, rather than saved as plain text - even though this is just a
+demo project, real Aadhaar data is sensitive, and I wanted the schema to
+reflect how it'd actually need to be handled in a real system.
+
+One real bug I ran into: I initially only ran prisma generate, which
+builds the Prisma client but doesn't actually create tables in the
+database. My first Submit attempt failed with an "Internal server error"
+because the UdyamSubmission table simply didn't exist in Supabase yet - I
+had to explicitly push the schema to the database before submissions
+could be saved. That was a good reminder that generating a client and
+applying a schema to a live database are two separate steps.
 
 ---
 
