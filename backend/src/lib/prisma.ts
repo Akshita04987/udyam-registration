@@ -1,6 +1,9 @@
+import * as dotenv from 'dotenv';
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+
+dotenv.config();
 
 // Singleton pool and client — reused across all requests
 const pool = new Pool({
