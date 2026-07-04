@@ -1,0 +1,125 @@
+{
+  "steps": [
+    {
+      "step": 1,
+      "title": "Aadhaar Verification",
+      "description": "Enter your Aadhaar details to receive an OTP for verification.",
+      "fields": [
+        {
+          "id": "aadhaarNumber",
+          "label": "Aadhaar Number",
+          "type": "text",
+          "placeholder": "Enter 12-digit Aadhaar number",
+          "required": true,
+          "maxLength": 12,
+          "pattern": "^[0-9]{12}$",
+          "patternMessage": "Aadhaar number must be exactly 12 digits",
+          "inputMode": "numeric",
+          "helpText": "Enter the 12-digit number printed on your Aadhaar card"
+        },
+        {
+          "id": "applicantName",
+          "label": "Applicant Name",
+          "type": "text",
+          "placeholder": "Enter name as on Aadhaar",
+          "required": true,
+          "pattern": "^[A-Za-z ]+$",
+          "patternMessage": "Name must contain only letters and spaces",
+          "helpText": "Enter your full name exactly as it appears on your Aadhaar card"
+        },
+        {
+          "id": "consent",
+          "label": "I hereby consent to the use of my Aadhaar number for the purpose of Udyam Registration and agree to the terms and conditions.",
+          "type": "checkbox",
+          "required": true,
+          "requiredMessage": "You must provide consent to proceed"
+        },
+        {
+          "id": "otpTrigger",
+          "label": "Validate & Generate OTP",
+          "type": "button",
+          "variant": "primary",
+          "dependsOn": ["aadhaarNumber", "applicantName", "consent"],
+          "helpText": "Button is enabled only after all above fields are correctly filled"
+        },
+        {
+          "id": "otp",
+          "label": "Enter OTP",
+          "type": "text",
+          "placeholder": "Enter 6-digit OTP",
+          "required": true,
+          "maxLength": 6,
+          "pattern": "^[0-9]{6}$",
+          "patternMessage": "OTP must be exactly 6 digits",
+          "inputMode": "numeric",
+          "conditional": true,
+          "showAfter": "otpRequested",
+          "helpText": "Enter the One-Time Password sent to your Aadhaar-registered mobile number"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "title": "PAN Verification",
+      "description": "Provide your organisation type and PAN details for verification.",
+      "fields": [
+        {
+          "id": "organisationType",
+          "label": "Type of Organisation",
+          "type": "select",
+          "placeholder": "Select organisation type",
+          "required": true,
+          "options": [
+            { "value": "proprietorship", "label": "Proprietorship" },
+            { "value": "huf", "label": "Hindu Undivided Family (HUF)" },
+            { "value": "partnership", "label": "Partnership" },
+            { "value": "cooperative_society", "label": "Co-operative Society" },
+            { "value": "private_ltd", "label": "Private Limited Company" },
+            { "value": "public_ltd", "label": "Public Limited Company" },
+            { "value": "self_help_group", "label": "Self Help Group" },
+            { "value": "llp", "label": "Limited Liability Partnership (LLP)" },
+            { "value": "society", "label": "Society" },
+            { "value": "trust", "label": "Trust" },
+            { "value": "others", "label": "Others" }
+          ],
+          "helpText": "Select the legal structure of your organisation"
+        },
+        {
+          "id": "panNumber",
+          "label": "PAN Number",
+          "type": "text",
+          "placeholder": "Enter 10-character PAN",
+          "required": true,
+          "maxLength": 10,
+          "pattern": "^[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}$",
+          "patternMessage": "PAN must be in format: 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F)",
+          "autoUppercase": true,
+          "helpText": "Enter your 10-character Permanent Account Number"
+        },
+        {
+          "id": "panHolderName",
+          "label": "Name as per PAN",
+          "type": "text",
+          "placeholder": "Enter name as on PAN card",
+          "required": false,
+          "pattern": "^[A-Za-z ]+$",
+          "patternMessage": "Name must contain only letters and spaces",
+          "conditional": true,
+          "showWhen": {
+            "field": "organisationType",
+            "notEquals": "proprietorship"
+          },
+          "helpText": "Required for all organisation types except Proprietorship"
+        },
+        {
+          "id": "dobOrDoi",
+          "label": "Date of Birth / Date of Incorporation",
+          "type": "date",
+          "required": true,
+          "helpText": "Enter date of birth (for individuals) or date of incorporation (for organisations)",
+          "maxDate": "today"
+        }
+      ]
+    }
+  ]
+}
