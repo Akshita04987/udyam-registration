@@ -86,7 +86,7 @@ export default function Step1Form({ onNext }: Step1FormProps) {
               field.label
             )}
           </button>
-          {field.helpText && (
+          {field.helpText && !otpRequested && (
             <p className="field-hint">{field.helpText}</p>
           )}
         </div>

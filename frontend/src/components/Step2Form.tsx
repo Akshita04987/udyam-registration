@@ -103,17 +103,16 @@ export default function Step2Form({ step1Data, onSuccess }: Step2FormProps) {
           {renderLabel(field, isRequired)}
           <select
             id={field.id}
-            className={`field-input field-select ${
-              errorMsg ? "field-input-error" : ""
-            }`}
+            className={`field-input field-select ${errorMsg ? "field-input-error" : ""
+              }`}
             value={values[fieldKey]}
             onChange={(e) => handleChange(fieldKey, e.target.value)}
             aria-describedby={
               errorMsg
                 ? `${field.id}-error`
                 : field.helpText
-                ? `${field.id}-hint`
-                : undefined
+                  ? `${field.id}-hint`
+                  : undefined
             }
             aria-invalid={!!errorMsg}
           >
@@ -153,8 +152,8 @@ export default function Step2Form({ step1Data, onSuccess }: Step2FormProps) {
               errorMsg
                 ? `${field.id}-error`
                 : field.helpText
-                ? `${field.id}-hint`
-                : undefined
+                  ? `${field.id}-hint`
+                  : undefined
             }
             aria-invalid={!!errorMsg}
           />
@@ -188,8 +187,8 @@ export default function Step2Form({ step1Data, onSuccess }: Step2FormProps) {
             errorMsg
               ? `${field.id}-error`
               : field.helpText
-              ? `${field.id}-hint`
-              : undefined
+                ? `${field.id}-hint`
+                : undefined
           }
           aria-invalid={!!errorMsg}
           autoComplete="off"
@@ -225,9 +224,8 @@ export default function Step2Form({ step1Data, onSuccess }: Step2FormProps) {
         <button
           id="step2-submit-btn"
           type="submit"
-          className={`btn btn-primary btn-full ${
-            isSubmitting ? "btn-disabled" : ""
-          }`}
+          className={`btn btn-primary btn-full ${isSubmitting ? "btn-disabled" : ""
+            }`}
           disabled={isSubmitting}
           aria-busy={isSubmitting}
         >

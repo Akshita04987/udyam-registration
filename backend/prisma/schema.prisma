@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model UdyamSubmission {
+  // Primary key — auto-generated UUID
+  id              String   @id @default(uuid())
+
+  // Unique reference number returned to the applicant, e.g. UDYAM-MH-00-0001234
+  referenceNumber String   @unique
+
+  // SHA-256 hash of the raw Aadhaar number — never stored in plain text
+  aadhaarHash     String
+
+  // Full name of the applicant as entered in step 1
+  applicantName   String
+
+  // Legal structure of the organisation (e.g. "proprietorship", "private_ltd")
+  organisationType String
+
+  // PAN number (stored as entered, already uppercased by the frontend)
+  panNumber       String
+
+  // Name as on PAN card — blank for Proprietorship, required for all other org types
+  panHolderName   String   @default("")
+
+  // Date of birth (individuals) or date of incorporation (registered entities)
+  dobOrDoi        DateTime
+
+  // Whether the Aadhaar OTP was verified before submission
+  otpVerified     Boolean  @default(false)
+
+  // Reserved for future PAN verification integration
+  panVerified     Boolean  @default(false)
+
+  // Timestamps managed automatically by Prisma
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
